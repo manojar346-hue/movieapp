@@ -1,24 +1,101 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField
-from wtforms.validators import InputRequired, Length
-from flask_wtf.file import FileAllowed, FileField
+from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField
+from wtforms.validators import DataRequired, Email, EqualTo, Length
 
 
+# ----------------------------
+# Registration Form
+# ----------------------------
 class RegisterForm(FlaskForm):
-    username = StringField("Username", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired(), Length(min=4)])
-    submit = SubmitField("Create Account")
+    username = StringField(
+        "Username",
+        validators=[DataRequired(), Length(min=3, max=20)]
+    )
+
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email()]
+    )
+
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired(), Length(min=6)]
+    )
+
+    confirm_password = PasswordField(
+        "Confirm Password",
+        validators=[DataRequired(), EqualTo("password")]
+    )
+
+    submit = SubmitField("Register")
 
 
+# ----------------------------
+# Login Form
+# ----------------------------
 class LoginForm(FlaskForm):
-    username = StringField("Username", validators=[InputRequired()])
-    password = PasswordField("Password", validators=[InputRequired()])
+    email = StringField(
+        "Email",
+        validators=[DataRequired(), Email()]
+    )
+
+    password = PasswordField(
+        "Password",
+        validators=[DataRequired()]
+    )
+
     submit = SubmitField("Login")
 
 
-class MovieForm(FlaskForm):
-    title = StringField("Title", validators=[InputRequired()])
-    description = TextAreaField("Description", validators=[InputRequired()])
-    rating = IntegerField("Rating (1-10)", validators=[InputRequired()])
-    poster = FileField("Movie Poster", validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+# ----------------------------
+# Add Movie Form
+# ----------------------------
+class AddMovieForm(FlaskForm):
+    title = StringField(
+        "Movie Title",
+        validators=[DataRequired()]
+    )
+
+    description = TextAreaField(
+        "Movie Description",
+        validators=[DataRequired(), Length(min=10)]
+    )
+
+    poster_url = StringField(
+        "Poster Image URL",
+        validators=[DataRequired()]
+    )
+
+    rating = IntegerField(
+        "Rating (1–10)",
+        validators=[DataRequired()]
+    )
+
     submit = SubmitField("Add Movie")
+
+
+# ----------------------------
+# Edit Movie Form
+# ----------------------------
+class EditMovieForm(FlaskForm):
+    title = StringField(
+        "Movie Title",
+        validators=[DataRequired()]
+    )
+
+    description = TextAreaField(
+        "Movie Description",
+        validators=[DataRequired(), Length(min=10)]
+    )
+
+    poster_url = StringField(
+        "Poster Image URL",
+        validators=[DataRequired()]
+    )
+
+    rating = IntegerField(
+        "Rating (1–10)",
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField("Update Movie")
