@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="row">
+    <div class="col-md-4">
+        <img src="{{ movie.poster }}" class="movie-detail-poster">
+    </div>
+
+    <div class="col-md-8">
+        <h2>{{ movie.title }}</h2>
+        <p class="text-muted">{{ movie.genre }}</p>
+        <p>⭐ Rating: {{ movie.rating }}</p>
+
+        <p class="mt-3">{{ movie.description }}</p>
+
+        <a href="{{ url_for('movies') }}" class="btn btn-secondary mt-4">Back</a>
+    </div>
+</div>
+
+{% endblock %}
