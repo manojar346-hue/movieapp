@@ -1,9 +1,6 @@
 flask
-flask_sqlalchemy
-flask_login
-flask_wtf
-email_validator
+flask-sqlalchemy
+flask-login
+flask-wtf
 werkzeug
 gunicorn
-psycopg2-binary
-python-dotenv
