@@ -6,15 +6,18 @@ from datetime import datetime
 from models import db, User, Movie, Watchlist
 from forms import RegisterForm, LoginForm, MovieForm, WatchlistForm
 
+
 app = Flask(_name_)
 app.config['SECRET_KEY'] = 'movie_app_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
+
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -26,9 +29,11 @@ def load_user(user_id):
     return User.query.get(int(user_id))
 
 
+
 @app.route('/')
 def home():
     return redirect(url_for('login'))
+
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -42,23 +47,22 @@ def register():
         existing_user = User.query.filter_by(username=form.username.data).first()
 
         if existing_user:
-            flash('Username already exists. Try another one.')
+            flash('Username already exists.')
             return redirect(url_for('register'))
-
-        hashed_password = generate_password_hash(form.password.data)
 
         user = User(
             username=form.username.data,
-            password=hashed_password
+            password=generate_password_hash(form.password.data)
         )
 
         db.session.add(user)
         db.session.commit()
 
-        flash('Registration successful! Please login.')
+        flash('Registration successful!')
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
+
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -76,9 +80,10 @@ def login():
             flash('Login successful!')
             return redirect(url_for('dashboard'))
         else:
-            flash('Invalid username or password.')
+            flash('Invalid credentials.')
 
     return render_template('login.html', form=form)
+
 
 
 @app.route('/logout')
@@ -94,7 +99,13 @@ def logout():
 def dashboard():
     total_movies = Movie.query.filter_by(user_id=current_user.id).count()
     total_watchlist = Watchlist.query.filter_by(user_id=current_user.id).count()
-    return render_template('dashboard.html', total_movies=total_movies, total_watchlist=total_watchlist)
+
+    return render_template(
+        'dashboard.html',
+        total_movies=total_movies,
+        total_watchlist=total_watchlist
+    )
+
 
 
 @app.route('/add_movie', methods=['GET', 'POST'])
@@ -117,17 +128,21 @@ def add_movie():
         db.session.add(movie)
         db.session.commit()
 
-        flash('Movie added successfully!')
+        flash('Movie added!')
         return redirect(url_for('movies'))
 
     return render_template('add_movie.html', form=form)
 
 
+
 @app.route('/movies')
 @login_required
 def movies():
-    user_movies = Movie.query.filter_by(user_id=current_user.id).order_by(Movie.timestamp.desc()).all()
-    return render_template('movies.html', movies=user_movies)
+    movies = Movie.query.filter_by(user_id=current_user.id)\
+        .order_by(Movie.timestamp.desc()).all()
+
+    return render_template('movies.html', movies=movies)
+
 
 
 @app.route('/delete_movie/<int:id>')
@@ -136,14 +151,15 @@ def delete_movie(id):
     movie = Movie.query.get_or_404(id)
 
     if movie.user_id != current_user.id:
-        flash('Unauthorized access.')
+        flash('Unauthorized!')
         return redirect(url_for('movies'))
 
     db.session.delete(movie)
     db.session.commit()
 
-    flash('Movie deleted successfully.')
+    flash('Movie deleted.')
     return redirect(url_for('movies'))
+
 
 
 @app.route('/watchlist', methods=['GET', 'POST'])
@@ -163,11 +179,14 @@ def watchlist():
         db.session.add(item)
         db.session.commit()
 
-        flash('Movie added to watchlist.')
+        flash('Added to watchlist.')
         return redirect(url_for('watchlist'))
 
-    items = Watchlist.query.filter_by(user_id=current_user.id).order_by(Watchlist.added_at.desc()).all()
+    items = Watchlist.query.filter_by(user_id=current_user.id)\
+        .order_by(Watchlist.added_at.desc()).all()
+
     return render_template('watchlist.html', form=form, items=items)
+
 
 
 @app.route('/delete_watchlist/<int:id>')
@@ -176,7 +195,7 @@ def delete_watchlist(id):
     item = Watchlist.query.get_or_404(id)
 
     if item.user_id != current_user.id:
-        flash('Unauthorized access.')
+        flash('Unauthorized!')
         return redirect(url_for('watchlist'))
 
     db.session.delete(item)
@@ -186,24 +205,26 @@ def delete_watchlist(id):
     return redirect(url_for('watchlist'))
 
 
+
 @app.route('/recommendations')
 @login_required
 def recommendations():
-    genre = request.args.get('genre', '')
-    min_rating = request.args.get('rating', '')
+    genre = request.args.get('genre')
+    rating = request.args.get('rating')
 
     query = Movie.query.filter_by(user_id=current_user.id)
 
     if genre:
         query = query.filter(Movie.genre.ilike(f'%{genre}%'))
 
-    if min_rating:
+    if rating:
         try:
-            query = query.filter(Movie.rating >= float(min_rating))
+            query = query.filter(Movie.rating >= float(rating))
         except ValueError:
             pass
 
-    movies = query.order_by(Movie.rating.desc(), Movie.timestamp.desc()).all()
+    movies = query.order_by(Movie.rating.desc()).all()
+
     return render_template('recommendations.html', movies=movies)
 
 
