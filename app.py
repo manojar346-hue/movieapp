@@ -207,5 +207,5 @@ def recommendations():
     return render_template('recommendations.html', movies=movies)
 
 
-if _name_ == '_main_':
+if __name__ == '__main__':
     app.run(debug=True)
