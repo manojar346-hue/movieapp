@@ -1,101 +1,44 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, TextAreaField, IntegerField
-from wtforms.validators import DataRequired, Email, EqualTo, Length
+from wtforms import StringField, PasswordField, SubmitField, IntegerField, TextAreaField, SelectField
+from wtforms.validators import DataRequired, Length
 
 
-# ----------------------------
-# Registration Form
-# ----------------------------
 class RegisterForm(FlaskForm):
-    username = StringField(
-        "Username",
-        validators=[DataRequired(), Length(min=3, max=20)]
-    )
-
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email()]
-    )
-
-    password = PasswordField(
-        "Password",
-        validators=[DataRequired(), Length(min=6)]
-    )
-
-    confirm_password = PasswordField(
-        "Confirm Password",
-        validators=[DataRequired(), EqualTo("password")]
-    )
-
-    submit = SubmitField("Register")
+    username = StringField('Username', validators=[DataRequired(), Length(min=3, max=100)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=4)])
+    submit = SubmitField('Register')
 
 
-# ----------------------------
-# Login Form
-# ----------------------------
 class LoginForm(FlaskForm):
-    email = StringField(
-        "Email",
-        validators=[DataRequired(), Email()]
-    )
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
 
-    password = PasswordField(
-        "Password",
+
+class MovieForm(FlaskForm):
+    movie_name = StringField('Movie Name', validators=[DataRequired()])
+    genre = StringField('Genre', validators=[DataRequired()])
+    release_year = IntegerField('Release Year', validators=[DataRequired()])
+
+    rating = SelectField(
+        'Rating',
+        choices=[
+            ('1', '★☆☆☆☆ (1/5)'),
+            ('2', '★★☆☆☆ (2/5)'),
+            ('3', '★★★☆☆ (3/5)'),
+            ('4', '★★★★☆ (4/5)'),
+            ('5', '★★★★★ (5/5)')
+        ],
         validators=[DataRequired()]
     )
 
-    submit = SubmitField("Login")
+    poster_url = StringField('Poster URL')
+    review = TextAreaField('Review')
+    submit = SubmitField('Add Movie')
 
 
-# ----------------------------
-# Add Movie Form
-# ----------------------------
-class AddMovieForm(FlaskForm):
-    title = StringField(
-        "Movie Title",
-        validators=[DataRequired()]
-    )
-
-    description = TextAreaField(
-        "Movie Description",
-        validators=[DataRequired(), Length(min=10)]
-    )
-
-    poster_url = StringField(
-        "Poster Image URL",
-        validators=[DataRequired()]
-    )
-
-    rating = IntegerField(
-        "Rating (1–10)",
-        validators=[DataRequired()]
-    )
-
-    submit = SubmitField("Add Movie")
-
-
-# ----------------------------
-# Edit Movie Form
-# ----------------------------
-class EditMovieForm(FlaskForm):
-    title = StringField(
-        "Movie Title",
-        validators=[DataRequired()]
-    )
-
-    description = TextAreaField(
-        "Movie Description",
-        validators=[DataRequired(), Length(min=10)]
-    )
-
-    poster_url = StringField(
-        "Poster Image URL",
-        validators=[DataRequired()]
-    )
-
-    rating = IntegerField(
-        "Rating (1–10)",
-        validators=[DataRequired()]
-    )
-
-    submit = SubmitField("Update Movie")
+class WatchlistForm(FlaskForm):
+    movie_name = StringField('Movie Name', validators=[DataRequired()])
+    genre = StringField('Genre', validators=[DataRequired()])
+    release_year = IntegerField('Release Year', validators=[DataRequired()])
+    submit = SubmitField('Add to Watchlist')
