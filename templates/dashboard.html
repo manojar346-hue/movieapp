@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Welcome {{ current_user.username }}</h1>
+
+<div class="stats-box">
+    <p><strong>Total Movies:</strong> {{ total_movies }}</p>
+    <p><strong>Total Watchlist:</strong> {{ total_watchlist }}</p>
+</div>
+{% endblock %}
