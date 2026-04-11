@@ -6,35 +6,27 @@ from datetime import datetime
 from models import db, User, Movie, Watchlist
 from forms import RegisterForm, LoginForm, MovieForm, WatchlistForm
 
-
-app = Flask(_name_)
+app = Flask(__name__)  
 app.config['SECRET_KEY'] = 'movie_app_secret_key'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///movies.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
 
 db.init_app(app)
 
 with app.app_context():
     db.create_all()
 
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
-
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-
-
 @app.route('/')
 def home():
     return redirect(url_for('login'))
-
-
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -63,8 +55,6 @@ def register():
 
     return render_template('register.html', form=form)
 
-
-
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
@@ -84,15 +74,12 @@ def login():
 
     return render_template('login.html', form=form)
 
-
-
 @app.route('/logout')
 @login_required
 def logout():
     logout_user()
     flash('Logged out successfully.')
     return redirect(url_for('login'))
-
 
 @app.route('/dashboard')
 @login_required
@@ -105,8 +92,6 @@ def dashboard():
         total_movies=total_movies,
         total_watchlist=total_watchlist
     )
-
-
 
 @app.route('/add_movie', methods=['GET', 'POST'])
 @login_required
@@ -133,8 +118,6 @@ def add_movie():
 
     return render_template('add_movie.html', form=form)
 
-
-
 @app.route('/movies')
 @login_required
 def movies():
@@ -142,8 +125,6 @@ def movies():
         .order_by(Movie.timestamp.desc()).all()
 
     return render_template('movies.html', movies=movies)
-
-
 
 @app.route('/delete_movie/<int:id>')
 @login_required
@@ -159,8 +140,6 @@ def delete_movie(id):
 
     flash('Movie deleted.')
     return redirect(url_for('movies'))
-
-
 
 @app.route('/watchlist', methods=['GET', 'POST'])
 @login_required
@@ -187,8 +166,6 @@ def watchlist():
 
     return render_template('watchlist.html', form=form, items=items)
 
-
-
 @app.route('/delete_watchlist/<int:id>')
 @login_required
 def delete_watchlist(id):
@@ -203,8 +180,6 @@ def delete_watchlist(id):
 
     flash('Removed from watchlist.')
     return redirect(url_for('watchlist'))
-
-
 
 @app.route('/recommendations')
 @login_required
@@ -227,7 +202,5 @@ def recommendations():
 
     return render_template('recommendations.html', movies=movies)
 
-
-
-if _name_ == '_main_':
+if __name__ == '__main__': 
     app.run(debug=True)
