@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Recommendations</h2>
+
+<form method="GET" class="mb-4">
+    <div class="mb-3">
+        <input type="text" name="genre" class="form-control" placeholder="Enter genre">
+    </div>
+
+    <div class="mb-3">
+        <input type="number" step="1" min="1" max="5" name="rating" class="form-control" placeholder="Minimum rating">
+    </div>
+
+    <button class="btn btn-success">Search</button>
+</form>
+
+<div class="movie-grid">
+    {% for movie in movies %}
+    <div class="movie-card">
+        {% if movie.poster_url %}
+            <img src="{{ movie.poster_url }}" alt="{{ movie.movie_name }}" class="movie-poster">
+        {% else %}
+            <div class="poster-placeholder">⭐</div>
+        {% endif %}
+
+        <div class="movie-content">
+            <h4>{{ movie.movie_name }}</h4>
+            <p><strong>Genre:</strong> {{ movie.genre }}</p>
+            <p><strong>Year:</strong> {{ movie.release_year }}</p>
+            <p><strong>Rating:</strong> {{ movie.rating }}/5</p>
+            <p><strong>Review:</strong> {{ movie.review if movie.review else 'No review' }}</p>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% if not movies %}
+<p>No recommendations found.</p>
+{% endif %}
+{% endblock %}
